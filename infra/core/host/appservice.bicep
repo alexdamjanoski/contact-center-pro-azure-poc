@@ -1,0 +1,34 @@
+metadata description = 'Creates an Azure App Service in an existing Azure App Service plan.'
+param name string
+param location string = resourceGroup().location
+param tags object = {
+  owner: 'adamjanoski@servicetitan.com'
+  createdBy: 'adamjanoski@servicetitan.com'
+  squad: 'contact center pro'
+}
+
+// Reference Properties
+param appServicePlanId string
+
+param netFrameworkVersion string = 'v7.0'
+param nodeVersion string = '18-lts'
+
+//@secure()
+//param appSettings object = {}
+
+resource appService 'Microsoft.Web/sites@2020-06-01' = {
+  name: name
+  location: location
+  tags: tags
+  properties: {
+    serverFarmId: appServicePlanId
+    httpsOnly: true
+    siteConfig: {
+      netFrameworkVersion: netFrameworkVersion
+      nodeVersion: nodeVersion
+    }
+  }
+}
+
+output name string = appService.name
+output uri string = 'https://${appService.properties.defaultHostName}'
